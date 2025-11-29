@@ -35,8 +35,18 @@ function App() {
             <img src="/logo.png" alt="" className='max-w-[90px]' />
           </div>
           <div className="search flex flex-col md:flex-row items-center justify-center gap-3 w-full md:w-auto">
-            <input type="text" placeholder="Search Recipe..." className="outline outline-white/30 focus:outline-[#f8efe0]/80 rounded-md px-4 py-2 text-white/75 w-full md:w-auto" onChange={(e) => { setSearch(e.target.value) }} />
-            <button onClick={GetMeal} className='bg-[#7b3d0b] px-5 py-2 rounded-md cursor-pointer w-full'>Search </button>
+            <input
+              type="text"
+              placeholder="Search Recipe..."
+              className="outline outline-white/30 focus:outline-[#f8efe0]/80 rounded-md px-4 py-2 text-white/75 w-full md:w-auto"
+              onChange={(e) => { setSearch(e.target.value) }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { GetMeal() } }}
+            />
+            <button
+              onClick={GetMeal}
+              className='bg-[#7b4a0b] px-5 py-2 rounded-md cursor-pointer w-full'>
+              Search
+            </button>
           </div>
         </nav>
       </header>
@@ -48,21 +58,20 @@ function App() {
 
         <div className='max-w-7xl mx-auto p-3 grid grid-rows-1 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-10'>
           {meals.map((meal, i) => (
-            <div className='card-main shadow-lg rounded-2xl overflow-hidden max-w-[350px] place-self-center-safe bg-[#f8efe0]' key={i}>
+            <div className='card-main shadow-[8px_8px_25px_rgba(0,0,0,0.2)] rounded-2xl overflow-hidden max-w-[350px] place-self-center-safe text-[#141515]/80 bg-[#f8efe0] cursor-pointer transition-all duration-250 hover:-translate-y-1' key={i}>
               <img src={meal.strMealThumb} className='object-cover' />
-              <div className="p-3">
-                <h2>{meal.strMeal}</h2>
-                <h2>{meal.strCategory}</h2>
-                <h2>{meal.strArea} Dish</h2>
-                <a href={meal.strYoutube} target='_blank'>Video</a>
-                <button onClick={() => { setIsOpen(true), setIndex(i) }}>view</button>
+              <div className="p-3 text-center">
+                <h1 className='text-xl lg:text-2xl font-bold'>{meal.strMeal}</h1>
+                <h2 className=''>{meal.strArea} Dish</h2>
+                <h2 className=''><span className='font-bold'>Category:</span> {meal.strCategory}</h2>
+                <button onClick={() => { setIsOpen(true), setIndex(i) }} className='bg-[#7b4a0b] px-5 py-2 mt-3 rounded-md cursor-pointer text-white'>Show Recipe</button>
               </div>
             </div>
           ))}
 
           {isOpen &&
             <div className="overlay fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-              <div className="overlay-content bg-[#7b3d0b] text-[#f8efe0]/80 px-2 py-6 text-center relative flex flex-col items-center max-w-[90vw] lg:max-w-[60vw] w-full max-h-[85vh] overflow-y-auto rounded-xl">
+              <div className="overlay-content bg-[#7b4a0b] text-[#f8efe0] px-2 py-6 text-center relative flex flex-col items-center max-w-[90vw] lg:max-w-[60vw] w-full max-h-[85vh] overflow-y-auto rounded-xl">
 
                 <button
                   onClick={() => setIsOpen(false)}
@@ -90,7 +99,19 @@ function App() {
                 </ul>
 
                 <h1 className="text-2xl mt-4 mb-2 text-[#141515] font-bold">Instructions</h1>
-                <p>{meals[index].strInstructions}</p>
+                <p className='font-light'>{meals[index].strInstructions}</p>
+
+                <h1 className='text-2xl mt-4 mb-1 text-[#141515] font-bold'>
+                  Video Tutorial
+                </h1>
+                <a href={meals[index].strYoutube} target='_blank' className='underline'>Click Here</a>
+
+                <div className="flex flex-row items-center gap-4 mt-6">
+                  <h2 className='font-bold'>Category: <span className='font-light'>{meals[index].strCategory}</span></h2>
+                  <h2> | </h2>
+                  <h2 className='font-bold'>Origin: <span className='font-light'>{meals[index].strArea}</span></h2>
+
+                </div>
               </div>
             </div>
           }
