@@ -11,28 +11,43 @@ function App() {
 
   async function GetMeal() {
 
+    if (!search || search.trim() == "") {
+      setWelcomeTxt('Please type something to search')
+      setMeals([])
+    }
+
     setMeals([])
     setWelcomeTxt('Finding Recipes...')
-
 
     try {
       const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/search.php?s=${search}`)
       const data = response.data.meals
+
+      if (!data) {
+        setWelcomeTxt('No Recipes Found...')
+        setMeals([])
+      }
+
       setMeals(data)
       setWelcomeTxt(null)
     }
     catch (err) {
-      console.log('Error')
+      setWelcomeTxt('Something went wrong')
     }
 
   }
 
   return (
-    <section className=''>
-      <header className='w-full bg-[#1b1c1c] text-white px-3'>
+    <main className='main-wrapper'>
+      {/* ---------------->Header-Main<---------------- */}
+      <header className='header-main w-full bg-[#1b1c1c] text-white px-3'>
         <nav className='flex justify-center md:justify-between items-center flex-col md:flex-row py-6 max-w-7xl mx-auto gap-6'>
           <div className="logo">
-            <img src="/logo.png" alt="" className='max-w-[90px]' />
+            <img
+              src="/logo.png"
+              alt="logo"
+              className='max-w-[90px]'
+            />
           </div>
           <div className="search flex flex-col md:flex-row items-center justify-center gap-3 w-full md:w-auto">
             <input
@@ -44,35 +59,57 @@ function App() {
             />
             <button
               onClick={GetMeal}
-              className='bg-[#7b4a0b] px-5 py-2 rounded-md cursor-pointer w-full'>
+              className='bg-[#c07411] px-5 py-2 rounded-md cursor-pointer w-full'
+            >
               Search
             </button>
           </div>
         </nav>
       </header>
-      <div className="app-content-main max-w-7xl mx-auto px-3 py-4 text-[#141515]">
+      {/* ---------------->App-Content<---------------- */}
+      <div className="app-content-main max-w-7xl mx-auto px-3 py-4 text-[#141515] min-h-[50vh]">
 
-
-
-        <h1 className='text-xl md:text-3xl text-center'>{welcomeTxt}</h1>
+        <h1 className='text-xl md:text-3xl text-center'>
+          {welcomeTxt}
+        </h1>
 
         <div className='max-w-7xl mx-auto p-3 grid grid-rows-1 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-10'>
+          {/* ---------------->Cards-Main<---------------- */}
           {meals.map((meal, i) => (
-            <div className='card-main shadow-[8px_8px_25px_rgba(0,0,0,0.2)] rounded-2xl overflow-hidden max-w-[350px] place-self-center-safe text-[#141515]/80 bg-[#f8efe0] cursor-pointer transition-all duration-250 hover:-translate-y-1' key={i}>
-              <img src={meal.strMealThumb} className='object-cover' />
+            <div
+              className='card-main shadow-[8px_8px_25px_rgba(0,0,0,0.2)] rounded-2xl overflow-hidden max-w-[350px] place-self-center-safe text-[#141515]/80 bg-[#f8efe0] cursor-pointer transition-all duration-250 hover:-translate-y-1'
+              key={i}
+            >
+              <img
+                src={meal.strMealThumb}
+                className='object-cover'
+              />
               <div className="p-3 text-center">
-                <h1 className='text-xl lg:text-2xl font-bold'>{meal.strMeal}</h1>
-                <h2 className=''>{meal.strArea} Dish</h2>
-                <h2 className=''><span className='font-bold'>Category:</span> {meal.strCategory}</h2>
-                <button onClick={() => { setIsOpen(true), setIndex(i) }} className='bg-[#7b4a0b] px-5 py-2 mt-3 rounded-md cursor-pointer text-white'>Show Recipe</button>
+                <h1 className='text-xl lg:text-2xl font-bold'>
+                  {meal.strMeal}
+                </h1>
+                <h2>
+                  {meal.strArea} Dish
+                </h2>
+                <h2>
+                  <span className='font-bold'>Category:</span> {meal.strCategory}
+                </h2>
+                <button
+                  onClick={() => { setIsOpen(true), setIndex(i) }}
+                  className='bg-[#c07411] px-5 py-2 mt-3 rounded-md cursor-pointer text-white'
+                >
+                  Show Recipe
+                </button>
               </div>
             </div>
           ))}
 
+          {/* ---------------->Card-Overlay<---------------- */}
           {isOpen &&
             <div className="overlay fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-              <div className="overlay-content bg-[#7b4a0b] text-[#f8efe0] px-2 py-6 text-center relative flex flex-col items-center max-w-[90vw] lg:max-w-[60vw] w-full max-h-[85vh] overflow-y-auto rounded-xl">
-
+              <div
+                className="overlay-content bg-[#7b4a0b] text-[#f8efe0] px-2 py-6 text-center relative flex flex-col items-center max-w-[90vw] lg:max-w-[60vw] w-full max-h-[85vh] overflow-y-auto rounded-xl"
+              >
                 <button
                   onClick={() => setIsOpen(false)}
                   className='absolute right-4 top-4 font-bold text-3xl cursor-pointer text-gray-100 hover:text-gray-300'
@@ -80,44 +117,95 @@ function App() {
                   <h1 className="bi bi-x"></h1>
                 </button>
 
-                <h1 className="text-2xl font-semibold mb-4">{meals[index].strMeal}</h1>
+                <h1 className="text-2xl font-semibold mb-4">
+                  {meals[index].strMeal}
+                </h1>
                 <img
                   src={meals[index].strMealThumb}
                   alt={`${meals[index].strMeal} Image`}
                   className='max-w-[250px] object-cover md:max-w-[300px] rounded-2xl mb-4'
                 />
 
-                <h1 className="text-2xl mb-2 text-[#141515] font-bold">Ingredients</h1>
+                <h1 className="text-2xl mb-2 text-[#141515] font-bold">
+                  Ingredients
+                </h1>
                 <ul className='text-start list-disc'>
                   {[...Array(20)].map((_, i) => {
                     const ingredients = meals[index][`strIngredient${i + 1}`];
                     const measure = meals[index][`strMeasure${i + 1}`];
+
                     if (ingredients && ingredients.trim() !== '') {
                       return <li key={i}>{ingredients} - {measure}</li>
                     }
+
                   })}
                 </ul>
 
-                <h1 className="text-2xl mt-4 mb-2 text-[#141515] font-bold">Instructions</h1>
-                <p className='font-light'>{meals[index].strInstructions}</p>
+                <h1 className="text-2xl mt-4 mb-2 text-[#141515] font-bold">
+                  Instructions
+                </h1>
+                <p className='font-light'>
+                  {meals[index].strInstructions}
+                </p>
 
                 <h1 className='text-2xl mt-4 mb-1 text-[#141515] font-bold'>
                   Video Tutorial
                 </h1>
-                <a href={meals[index].strYoutube} target='_blank' className='underline'>Click Here</a>
+                <a href={meals[index].strYoutube} target='_blank' className='underline'>
+                  Click Here
+                </a>
 
                 <div className="flex flex-row items-center gap-4 mt-6">
-                  <h2 className='font-bold'>Category: <span className='font-light'>{meals[index].strCategory}</span></h2>
+                  <h2 className='font-bold'>
+                    Category: <span className='font-light'>{meals[index].strCategory}</span>
+                  </h2>
                   <h2> | </h2>
-                  <h2 className='font-bold'>Origin: <span className='font-light'>{meals[index].strArea}</span></h2>
-
+                  <h2 className='font-bold'>
+                    Origin: <span className='font-light'>{meals[index].strArea}</span>
+                  </h2>
                 </div>
               </div>
             </div>
           }
         </div>
       </div>
-    </section>
+      {/* ---------------->Footer-Main<---------------- */}
+      <footer className='footer-main w-full bg-[#1b1c1c] text-[#f8efe0] px-3'>
+
+        <div className="footer-content max-w-7xl mx-auto grid grid-rows-1 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-content-center py-8 gap-5">
+          <div className="logo">
+            <img
+              src="/logo.png"
+              alt="logo"
+              className='max-w-[120px]'
+            />
+            <h5 className='py-2'>Discover dishes you’ll love. Quick, clear and made for everyday cooking.</h5>
+          </div>
+          <div className="quick-links">
+            <h5 className='text-[#c07411] font-bold text-xl'>Quick Links</h5>
+            <ul>
+              <li><a href="?" className='transition-all duration-150 hover:text-[#c07411]'>Home</a></li>
+              <li><a href="?" className='transition-all duration-150 hover:text-[#c07411]'>Popular Recipes</a></li>
+              <li><a href="?" className='transition-all duration-150 hover:text-[#c07411]'>Categories</a></li>
+              <li><a href="?" className='transition-all duration-150 hover:text-[#c07411]'>Contact Us</a></li>
+            </ul>
+          </div>
+          <div className="social-icons space-y-2">
+            <h5 className='text-[#c07411] font-bold text-xl'> Follow Us:</h5>
+            <div className="space-x-4">
+              <a href="?" className='transition-all duration-150 hover:text-[#c07411]'><i className="bi bi-facebook"></i></a>
+              <a href="?" className='transition-all duration-150 hover:text-[#c07411]'><i className="bi bi-instagram"></i></a>
+              <a href="?" className='transition-all duration-150 hover:text-[#c07411]'><i className="bi bi-twitter-x"></i></a>
+              <a href="?" className='transition-all duration-150 hover:text-[#c07411]'><i className="bi bi-youtube"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <div className="footer-bottom border-t border-white/20 py-4 text-center">
+          <h5>© 2025 Hungry Spoon — All Rights Reserved.</h5>
+        </div>
+      </footer>
+    </main>
   )
 
 }
