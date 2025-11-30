@@ -14,18 +14,19 @@ function App() {
     if (!search || search.trim() == "") {
       setWelcomeTxt('Please type something to search')
       setMeals([])
+      return
     }
 
-    setMeals([])
     setWelcomeTxt('Finding Recipes...')
 
     try {
-      const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/search.php?s=${search}`)
+      const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/search.php?s=${search.trim()}`)
       const data = response.data.meals
 
       if (!data) {
-        setWelcomeTxt('No Recipes Found...')
         setMeals([])
+        setWelcomeTxt('No Recipes Found...')
+        return
       }
 
       setMeals(data)
